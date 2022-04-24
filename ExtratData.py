@@ -4,6 +4,9 @@ import pytesseract
 import sys
 from pdf2image import convert_from_path
 import os
+import cv2
+
+
 
 # Path of the pdf
 PDF_file = "szakdolgozat1.pdf"
@@ -35,8 +38,46 @@ for page in pages:
     # Increment the counter to update filename
     image_counter = image_counter + 1
 
+
 '''
-Part #2 - Recognizing text from the images using OCR
+Part #2 - detecting text regions
+'''
+
+
+#Create our config
+
+myconfig = r"--psm 12 --oem 3"
+
+# Variable to get count of total number of pages
+filelimit = image_counter - 1
+
+# Iterate from 1 to total number of pages
+for i in range(1, filelimit + 1):
+
+    # Set filename to recognize text from
+    # Again, these files will be:
+    # page_1.jpg
+    # page_2.jpg
+    # ....
+    # page_n.jpg
+    filename = "page_" + str(i) + ".jpg"
+
+    img2 = cv2.imread("page_" + str(i) + ".jpg")
+    img = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
+    height, width, _ = img.shape
+
+    ###################
+    boxes = pytesseract.image_to_boxes(img, config=myconfig)
+    for box in boxes.splitlines():
+        box = box.split(" ")
+        img = cv2.rectangle(img, (int(box[1]), height - int(box[2])), (int(box[3]), height - int(box[4])), (0, 255, 0),
+                            2)
+    cv2.imshow(filename, img)
+cv2.waitKey(0)
+
+
+'''
+Part #3 - Recognizing text from the images using OCR
 '''
 3
 # Variable to get count of total number of pages
@@ -60,7 +101,7 @@ for i in range(1, filelimit + 1):
     filename = "page_" + str(i) + ".jpg"
 
     # Recognize the text as string in image using pytesserct
-    text = str(((pytesseract.image_to_string(Image.open(filename)))))
+    text = str(((pytesseract.image_to_data(Image.open(filename), lang='eng+hu'))))
 
     # The recognized text is stored in variable text
     # Any string processing may be applied on text
@@ -77,4 +118,4 @@ for i in range(1, filelimit + 1):
     f.write(text)
 
 # Close the file after writing all the text.
-f.close()
+#f.close()
