@@ -16,7 +16,7 @@ Part #1 : Converting PDF to images
 '''
 
 # Store all the pages of the PDF in a variable
-pages = convert_from_path(PDF_file, 100 , first_page=0, last_page=9)
+pages = convert_from_path(PDF_file, 350 , first_page=0, last_page=9)
 
 # Counter to store images of each page of PDF to image
 image_counter = 1
@@ -65,13 +65,20 @@ for i in range(1, filelimit + 1):
     img2 = cv2.imread("page_" + str(i) + ".jpg")
     img = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
     height, width, _ = img.shape
-
+    se = cv2.getStructuringElement(cv2.MORPH_RECT, (8, 8))
+    bg = cv2.morphologyEx(img, cv2.MORPH_DILATE, se)
+    img = cv2.divide(img, bg, scale=255)
+    img = cv2.fastNlMeansDenoisingColored(img, None, 10, 10, 7, 21)
+    #img = cv2.threshold(img, 0, 255, cv2.THRESH_OTSU)[1]
     ###################
     boxes = pytesseract.image_to_boxes(img, config=myconfig)
+    
     for box in boxes.splitlines():
         box = box.split(" ")
         img = cv2.rectangle(img, (int(box[1]), height - int(box[2])), (int(box[3]), height - int(box[4])), (0, 255, 0),
                             2)
+
+    img = cv2.resize(img, (width // 4, height // 4))
     cv2.imshow(filename, img)
 cv2.waitKey(0)
 
