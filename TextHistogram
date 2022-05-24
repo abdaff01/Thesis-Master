@@ -1,0 +1,43 @@
+import nltk
+from nltk.tokenize import word_tokenize
+from collections import Counter
+
+
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+
+nltk.data.path.append("/home/abdelhay")
+#For Gensim
+import gensim
+import string
+from gensim import corpora
+from gensim.corpora.dictionary import Dictionary
+from nltk.tokenize import word_tokenize
+
+
+with open("out_text.txt") as text_file:
+    text1 = text_file.read()
+
+tokens = word_tokenize(text1)
+lowercase_tokens = [t.lower() for t in tokens]
+# print(lowercase_tokens)
+#
+bagofwords_1 = Counter(lowercase_tokens)
+# print(bagofwords_1.most_common(10))
+
+alphabets = [t for t in lowercase_tokens if t.isalpha()]
+
+words = stopwords.words("hungarian")
+stopwords_removed = [t for t in alphabets if t not in words]
+
+# print(stopwords_removed)
+
+lemmatizer = WordNetLemmatizer()
+
+lem_tokens = [lemmatizer.lemmatize(t) for t in stopwords_removed]
+
+bag_words = Counter(lem_tokens)
+print(bag_words.most_common(10))
+
+
+
