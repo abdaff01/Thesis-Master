@@ -13,13 +13,13 @@ from collections import Counter
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 nltk.data.path.append("/home/abdelhay")
-#For Gensim
 import gensim
 import string
 from gensim import corpora
 from gensim.corpora.dictionary import Dictionary
 from nltk.tokenize import word_tokenize
 
+#Function for filters on Images
 def display(im_path):
     dpi = 80
     im_data = plt.imread(im_path)
@@ -53,8 +53,8 @@ def noise_removal(image):
     image = cv2.medianBlur(image, 3)
     return (image)
 
-print('read PDF')
 # Path of the pdf
+print('read PDF')
 PDF_file = "szakdolgozat2.pdf"
 
 '''
@@ -64,13 +64,13 @@ Part #1 : Converting PDF to images
 print('convert PDF to Images')
 
 # Store the first 10 pages of the PDF in a variable
-pages = convert_from_path(PDF_file, 300, first_page=0, last_page=9)
+all_pages = convert_from_path(PDF_file, 300, first_page=0, last_page=9)
 
 # Counter to store images of each page of PDF to image
 image_counter = 1
 
 # Iterate through all the pages stored above
-for page in pages:
+for page in all_pages:
     # Declaring filename for each page of PDF as JPG
     # For each page, filename will be:
     # PDF page n -> page_n.jpg
@@ -92,32 +92,25 @@ print('Applying filters on the extracted Images')
 myconfig = r"--psm 12 --oem 3"
 
 # Variable to get count of total number of pages
-filelimit = image_counter - 1
+file_limit = image_counter - 1
 
 # Iterate from 1 to total number of pages
-for i in range(1, filelimit + 1):
+for i in range(1, file_limit + 1):
     # Set filename to recognize text from
     # Again, these files will be:
     # page_n.jpg
     filename = "page2_" + str(i) + ".jpg"
-
     filter1 = display(filename)
-
     img2 = cv2.imread("page2_" + str(i) + ".jpg")
     img = cv2.cvtColor(filter1, cv2.COLOR_BGR2RGB)
     filter2 = noise_removal(img)
     height, width, _ = filter2.shape
-    # se = cv2.getStructuringElement(cv2.MORPH_RECT, (8, 8))
-    # bg = cv2.morphologyEx(img, cv2.MORPH_DILATE, se)
-    # img = cv2.divide(img, bg, scale=255)
-    # img = cv2.fastNlMeansDenoisingColored(img, None, 10, 10, 7, 21)
 
     boxes = pytesseract.image_to_boxes(filter2, config=myconfig)
     for box in boxes.splitlines():
         box = box.split(" ")
         img = cv2.rectangle(filter2, (int(box[1]), height - int(box[2])), (int(box[3]), height - int(box[4])), (0, 255, 0),
                             2)
-
     img3 = cv2.resize(filter2, (width // 4, height // 4))
     cv2.imshow('', img3)
     cv2.waitKey(0)
@@ -127,7 +120,6 @@ Part #3 - Recognizing text from the images using OCR
 '''
 
 print('extract texts from Images')
-
 # Creating a text file to write the output
 outfile = "out_text2.txt"
 
@@ -136,7 +128,7 @@ outfile = "out_text2.txt"
 f = open(outfile, "a")
 
 # Iterate from 1 to total number of pages
-for i in range(1, filelimit + 1):
+for i in range(1, file_limit + 1):
     # Set filename to recognize text from
     # Again, these files will be:
     # page_n.jpg
@@ -144,16 +136,6 @@ for i in range(1, filelimit + 1):
 
     # Recognize the text as string in image using pytesserct
     text = str(((pytesseract.image_to_string(Image.open(filename)))))
-
-    # The recognized text is stored in variable text
-    # Any string processing may be applied on text
-    # Here, basic formatting has been done:
-    # In many PDFs, at line ending, if a word can't
-    # be written fully, a 'hyphen' is added.
-    # The rest of the word is written in the next line
-    # Eg: This is a sample text this word here GeeksF-
-    # orGeeks is half on first line, remaining on next.
-    # To remove this, we replace every '-\n' to ''.
     text = text.replace('-\n', '')
 
     # Finally, write the processed text to the file.
@@ -174,12 +156,11 @@ analize = "analize.txt"
 # Open the file in append mode so that
 # All contents of all images are added to the same file
 fa = open(analize, "a")
-
 with open("out_text2.txt") as text_file:
     text1 = text_file.read()
-
 tokens = word_tokenize(text1)
 lowercase_tokens = [t.lower() for t in tokens]
+
 # print(lowercase_tokens)
 bagofwords_1 = Counter(lowercase_tokens)
 
@@ -192,18 +173,14 @@ stopwords_removed = [t for t in alphabets if t not in words]
 # print(stopwords_removed)
 
 lemmatizer1 = WordNetLemmatizer()
-
 lem_tokens = [lemmatizer1.lemmatize(t) for t in stopwords_removed]
-
 bag_words = Counter(lem_tokens)
-
 resu = str(bag_words.most_common(10))
-# Finally, write the processed text to the file.
 
+# Finally, write the processed text to the file.
 open('analize.txt', 'w').close()
 fa.seek(0)
 fa.write(resu)
 fa.truncate()
 
 print('done')
-
