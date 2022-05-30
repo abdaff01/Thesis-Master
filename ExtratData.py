@@ -136,7 +136,7 @@ for i in range(1, file_limit + 1):
 
     # Recognize the text as string in image using pytesserct
     text = str(((pytesseract.image_to_string(Image.open(filename)))))
-    text = text.replace('-\n', '')
+    text = text.replace('-\n{}[]|_=+-)(*&^%$#@!<>', '')
 
     # Finally, write the processed text to the file.
     f.write(text)
