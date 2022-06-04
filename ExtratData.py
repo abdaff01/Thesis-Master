@@ -135,7 +135,7 @@ for i in range(1, file_limit + 1):
     filename = "page2_" + str(i) + ".jpg"
 
     # Recognize the text as string in image using pytesserct
-    text = str(((pytesseract.image_to_string(Image.open(filename)))))
+    text = str(((pytesseract.image_to_string(Image.open(filename), lang= 'hun+eng'))))
     text = text.replace('-\n{}[]|_=+-)(*&^%$#@!<>', '')
 
     # Finally, write the processed text to the file.
