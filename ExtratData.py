@@ -18,6 +18,7 @@ import string
 from gensim import corpora
 from gensim.corpora.dictionary import Dictionary
 from nltk.tokenize import word_tokenize
+from lara import *
 
 #Function for filters on Images
 def display(im_path):
@@ -55,7 +56,7 @@ def noise_removal(image):
 
 # Path of the pdf
 print('read PDF')
-PDF_file = "szakdolgozat2.pdf"
+PDF_file = "szakdolgozat6.pdf"
 
 '''
 Part #1 : Converting PDF to images
@@ -64,7 +65,9 @@ Part #1 : Converting PDF to images
 print('convert PDF to Images')
 
 # Store the first 10 pages of the PDF in a variable
-all_pages = convert_from_path(PDF_file, 300, first_page=0, last_page=9)
+# all_pages = convert_from_path(PDF_file, 300, first_page=0, last_page=9)
+all_pages = convert_from_path(PDF_file, 200)
+
 
 # Counter to store images of each page of PDF to image
 image_counter = 1
@@ -74,7 +77,7 @@ for page in all_pages:
     # Declaring filename for each page of PDF as JPG
     # For each page, filename will be:
     # PDF page n -> page_n.jpg
-    filename = "page2_" + str(image_counter) + ".jpg"
+    filename = "page6_" + str(image_counter) + ".jpg"
 
     # Save the image of the page in system
     page.save(filename, 'JPEG')
@@ -99,21 +102,21 @@ for i in range(1, file_limit + 1):
     # Set filename to recognize text from
     # Again, these files will be:
     # page_n.jpg
-    filename = "page2_" + str(i) + ".jpg"
+    filename = "page6_" + str(i) + ".jpg"
     filter1 = display(filename)
-    img2 = cv2.imread("page2_" + str(i) + ".jpg")
+    img2 = cv2.imread("page6_" + str(i) + ".jpg")
     img = cv2.cvtColor(filter1, cv2.COLOR_BGR2RGB)
     filter2 = noise_removal(img)
     height, width, _ = filter2.shape
 
-    boxes = pytesseract.image_to_boxes(filter2, config=myconfig)
-    for box in boxes.splitlines():
-        box = box.split(" ")
-        img = cv2.rectangle(filter2, (int(box[1]), height - int(box[2])), (int(box[3]), height - int(box[4])), (0, 255, 0),
-                            2)
-    img3 = cv2.resize(filter2, (width // 4, height // 4))
-    cv2.imshow('', img3)
-    cv2.waitKey(0)
+    # boxes = pytesseract.image_to_boxes(filter2, config=myconfig)
+    # for box in boxes.splitlines():
+    #     box = box.split(" ")
+    #     img = cv2.rectangle(filter2, (int(box[1]), height - int(box[2])), (int(box[3]), height - int(box[4])), (0, 255, 0),
+    #                         2)
+    # img3 = cv2.resize(filter2, (width // 4, height // 4))
+    # cv2.imshow('', img3)
+    # cv2.waitKey(0)
 
 '''
 Part #3 - Recognizing text from the images using OCR
@@ -121,7 +124,7 @@ Part #3 - Recognizing text from the images using OCR
 
 print('extract texts from Images')
 # Creating a text file to write the output
-outfile = "out_text2.txt"
+outfile = "out_text6.txt"
 
 # Open the file in append mode so that
 # All contents of all images are added to the same file
@@ -132,7 +135,7 @@ for i in range(1, file_limit + 1):
     # Set filename to recognize text from
     # Again, these files will be:
     # page_n.jpg
-    filename = "page2_" + str(i) + ".jpg"
+    filename = "page6_" + str(i) + ".jpg"
 
     # Recognize the text as string in image using pytesserct
     text = str(((pytesseract.image_to_string(Image.open(filename), lang= 'hun+eng'))))
@@ -151,12 +154,12 @@ Part #4 - Analyzing the text file
 print('analyzing the text file')
 
 # Creating a text file to write the output
-analize = "analize.txt"
+analize = "analize6.txt"
 
 # Open the file in append mode so that
 # All contents of all images are added to the same file
 fa = open(analize, "a")
-with open("out_text2.txt") as text_file:
+with open("out_text6.txt") as text_file:
     text1 = text_file.read()
 tokens = word_tokenize(text1)
 lowercase_tokens = [t.lower() for t in tokens]
@@ -178,9 +181,37 @@ bag_words = Counter(lem_tokens)
 resu = str(bag_words.most_common(10))
 
 # Finally, write the processed text to the file.
-open('analize.txt', 'w').close()
+open('analize6.txt', 'w').close()
 fa.seek(0)
 fa.write(resu)
 fa.truncate()
+
+'''
+Part #4 - Sugguesting topic for the text file
+'''
+
+sys.path.append(os.path.join(os.path.dirname(
+    os.path.realpath(__file__)), os.pardir))
+topic = "topic6.txt"
+ta = open(topic, "a")
+
+if __name__ == "__main__":
+
+    with open("out_text6.txt") as text_file:
+        user_text = text_file.read()
+        match_common = parser.Intents(entities.common()).match_set(user_text)
+        if match_common:
+            clean_user_text = parser.Intents(
+                entities.common()).clean(user_text)
+        else:
+            print(user_text)
+
+parts = clean_user_text.split('-')
+artist = stemmer.inverse(parts[0], 'től')
+title = stemmer.inverse(parts[1], 't')
+the = nlp.az(title)
+print(artist, the, title)
+to = artist,the,title
+ta.write(','.join(to))
 
 print('done')
