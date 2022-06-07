@@ -56,7 +56,7 @@ def noise_removal(image):
 
 # Path of the pdf
 print('read PDF')
-PDF_file = "szakdolgozat6.pdf"
+PDF_file = "szakdolgozat4.pdf"
 
 '''
 Part #1 : Converting PDF to images
@@ -65,7 +65,7 @@ Part #1 : Converting PDF to images
 print('convert PDF to Images')
 
 # Store the first 10 pages of the PDF in a variable
-# all_pages = convert_from_path(PDF_file, 300, first_page=0, last_page=9)
+# all_pages = convert_from_path(PDF_file, 300, first_page=0, last_page=20)
 all_pages = convert_from_path(PDF_file, 200)
 
 
@@ -77,7 +77,7 @@ for page in all_pages:
     # Declaring filename for each page of PDF as JPG
     # For each page, filename will be:
     # PDF page n -> page_n.jpg
-    filename = "page6_" + str(image_counter) + ".jpg"
+    filename = "page9_" + str(image_counter) + ".jpg"
 
     # Save the image of the page in system
     page.save(filename, 'JPEG')
@@ -102,9 +102,9 @@ for i in range(1, file_limit + 1):
     # Set filename to recognize text from
     # Again, these files will be:
     # page_n.jpg
-    filename = "page6_" + str(i) + ".jpg"
+    filename = "page9_" + str(i) + ".jpg"
     filter1 = display(filename)
-    img2 = cv2.imread("page6_" + str(i) + ".jpg")
+    img2 = cv2.imread("page9_" + str(i) + ".jpg")
     img = cv2.cvtColor(filter1, cv2.COLOR_BGR2RGB)
     filter2 = noise_removal(img)
     height, width, _ = filter2.shape
@@ -124,25 +124,27 @@ Part #3 - Recognizing text from the images using OCR
 
 print('extract texts from Images')
 # Creating a text file to write the output
-outfile = "out_text6.txt"
+outfile = "out_text9.txt"
 
 # Open the file in append mode so that
 # All contents of all images are added to the same file
-f = open(outfile, "a")
+f = open(outfile, 'w')
 
 # Iterate from 1 to total number of pages
 for i in range(1, file_limit + 1):
     # Set filename to recognize text from
     # Again, these files will be:
     # page_n.jpg
-    filename = "page6_" + str(i) + ".jpg"
+    filename = "page9_" + str(i) + ".jpg"
 
     # Recognize the text as string in image using pytesserct
     text = str(((pytesseract.image_to_string(Image.open(filename), lang= 'hun+eng'))))
     text = text.replace('-\n{}[]|_=+-)(*&^%$#@!<>', '')
 
     # Finally, write the processed text to the file.
+    # f.seek(0)
     f.write(text)
+    # f.truncate()
 
 # Close the file after writing all the text.
 f.close()
@@ -154,12 +156,12 @@ Part #4 - Analyzing the text file
 print('analyzing the text file')
 
 # Creating a text file to write the output
-analize = "analize6.txt"
+analize = "analize9.txt"
 
 # Open the file in append mode so that
 # All contents of all images are added to the same file
 fa = open(analize, "a")
-with open("out_text6.txt") as text_file:
+with open("out_text9.txt") as text_file:
     text1 = text_file.read()
 tokens = word_tokenize(text1)
 lowercase_tokens = [t.lower() for t in tokens]
@@ -173,15 +175,20 @@ alphabets = [t for t in lowercase_tokens if t.isalpha()]
 words = stopwords.words("hungarian")
 stopwords_removed = [t for t in alphabets if t not in words]
 
-# print(stopwords_removed)
+words = stopwords.words("english")
+stopwords_removed = [t for t in alphabets if t not in words]
+stopwords_removed = [t for t in alphabets if len(t) >= 4]
 
+
+
+# print(stopwords_removed)
 lemmatizer1 = WordNetLemmatizer()
 lem_tokens = [lemmatizer1.lemmatize(t) for t in stopwords_removed]
-bag_words = Counter(lem_tokens)
+bag_words = Counter(stopwords_removed)
 resu = str(bag_words.most_common(10))
 
 # Finally, write the processed text to the file.
-open('analize6.txt', 'w').close()
+open('analize9.txt', 'w').close()
 fa.seek(0)
 fa.write(resu)
 fa.truncate()
@@ -192,12 +199,12 @@ Part #4 - Sugguesting topic for the text file
 
 sys.path.append(os.path.join(os.path.dirname(
     os.path.realpath(__file__)), os.pardir))
-topic = "topic6.txt"
+topic = "topic9.txt"
 ta = open(topic, "a")
 
 if __name__ == "__main__":
 
-    with open("out_text6.txt") as text_file:
+    with open("out_text9.txt") as text_file:
         user_text = text_file.read()
         match_common = parser.Intents(entities.common()).match_set(user_text)
         if match_common:
