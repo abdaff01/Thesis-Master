@@ -6,9 +6,7 @@ This repository contains the implementation, experiments, and documentation for 
 
 ## Author
 
-- Author: Abdelhay Affoun (GitHub: @abdaff01)  
-
-Replace bracketed fields with the correct information for final submission.
+- Author: Abdelhay Affoun (GitHub: @abdaff01) 
 
 ## Table of Contents
 
@@ -118,7 +116,7 @@ Evaluation metrics provided:
 - Word Error Rate (WER)  
 - Precision, Recall, F1 for metadata fields (title, authors, affiliations, abstract, references)
 
-Include experiment results, plots, and sample outputs in `docs/` or `results/`. Replace placeholder results with concrete tables and figures from your experiments.
+Include experiment results, plots, and sample outputs in `docs/` or `results/`. 
 
 ## Repository Structure
 
