@@ -4,12 +4,9 @@
 
 This repository contains the implementation, experiments, and documentation for a Master's thesis that develops a robust Optical Character Recognition (OCR) pipeline for automated metadata extraction from scholarly documents. The system combines image preprocessing, layout analysis, OCR transcription, and natural language processing to extract structured metadata fields (title, authors, affiliations, abstract, keywords, references) from scanned and digital-born research papers.
 
-## Author, Supervisor & Affiliation
+## Author
 
-- Author: Abdallah Daff (GitHub: @abdaff01)  
-- Supervisor: [Supervisor Name]  
-- Affiliation: [Department, University]  
-- Thesis year: 2026
+- Author: Abdelhay Affoun (GitHub: @abdaff01)  
 
 Replace bracketed fields with the correct information for final submission.
 
@@ -25,9 +22,6 @@ Replace bracketed fields with the correct information for final submission.
 - [Evaluation & Results](#evaluation--results)  
 - [Repository Structure](#repository-structure)  
 - [Reproducibility](#reproducibility)  
-- [How to Cite](#how-to-cite)  
-- [License & Acknowledgements](#license--acknowledgements)  
-- [Contact](#contact)
 
 ## Background and Motivation
 
@@ -152,34 +146,4 @@ To reproduce experiments:
 
 For exact reproducibility, include random seeds, dependency versions, and (optionally) a Docker image.
 
-## How to Cite
 
-If you use code or models from this repository, please cite the thesis and repository. Example BibTeX:
-
-@misc{daff2026thesis,
-  author = {Daff, Abdallah},
-  title = {Developing an OCR System for Automated Metadata Extraction},
-  year = {2026},
-  howpublished = {Master's thesis, [University Name]},
-  note = {Code available at https://github.com/abdaff01/Thesis-Master}
-}
-
-## License & Acknowledgements
-
-This repository is provided under the MIT License. See LICENSE for details.
-
-Acknowledgements:
-- Supervisor, committee members, and collaborators  
-- Open-source tools and libraries used (e.g., Tesseract, PyTorch)  
-- Dataset providers and maintainers
-
-## Contact
-
-For questions, contributions, or collaborations:
-- Author: Abdallah Daff — abdallah.daff@example.edu (replace with your institutional email)  
-- GitHub: https://github.com/abdaff01  
-- Issues and pull requests are welcome.
-
----
-
-This README is intended as a professional, academic introduction to the project. Please review and update author/supervisor information, dataset citations, and the results section with concrete numbers and figures from your thesis prior to final submission.
